@@ -4,13 +4,16 @@ var lambda = new AWS.Lambda();
 var topology = {
   entry: "exclaim1",
   bolts: {
-    exclaim1: {
-      functionName: "exclaim1",
-      next: "exclaim2"
-    },
-    exclaim2: {
-      functionName: "exclaim2"
-    }
+      exclaim1: {
+          functionName: "exclaim1",
+          next: ["exclaim2", "questionMark"]
+      },
+      exclaim2: {
+          functionName: "exclaim2"
+      },
+      questionMark: {
+          functionName: "questionMark"
+      }
   }
 };
 
@@ -28,10 +31,16 @@ function handleBoltResult(bolt, output, context) {
   console.log("Got output " + JSON.stringify(output) + " from function " + bolt.functionName);
   var data = JSON.parse(output.Payload);
   if (bolt.next) {
-    var nextBolt = topology.bolts[bolt.next];
-    invokeBolt(nextBolt, data, context, handleBoltResult);
+
+       for (var i = 0; i < bolt.next.length; i++) {
+            var nextBolt = topology.bolts[bolt.next[i]];
+            console.log("-bolt: " + JSON.stringify(nextBolt));
+            invokeBolt(nextBolt, data, context, handleBoltResult);
+       }
+
   } else {
-    context.succeed(data);
+      console.log("Graph ended on bolt " + JSON.stringify(bolt) + " with value " + JSON.stringify(output));
+      context.succeed(data);
   }
 }
 
@@ -40,4 +49,4 @@ exports.handler = function(event, context) {
   invokeBolt(bolt, event, context, handleBoltResult);
 };
 
-// invokeBolt(topology.bolts.exclaim1, {data: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);
+ invokeBolt(topology.bolts.exclaim1, {data: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);
