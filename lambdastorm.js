@@ -2,14 +2,14 @@ var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda();
 
 var topology = {
-  entry: "wordCount",
+  entry: "exclaim1",
   bolts: {
-    wordCount: {
-      functionName: "LambdaStorm",
-      next: "language"
+    exclaim1: {
+      functionName: "exclaim1",
+      next: "exclaim2"
     },
-    language: {
-      functionName: "LambdaStorm"
+    exclaim2: {
+      functionName: "exclaim2"
     }
   }
 };
@@ -26,12 +26,12 @@ function invokeBolt(bolt, data, context, resultHandler) {
 
 function handleBoltResult(bolt, output, context) {
   console.log("Got output " + JSON.stringify(output) + " from function " + bolt.functionName);
+  var data = JSON.parse(output.Payload);
   if (bolt.next) {
     var nextBolt = topology.bolts[bolt.next];
-    var data = JSON.parse(output.Payload);
     invokeBolt(nextBolt, data, context, handleBoltResult);
   } else {
-    context.succeed(output);
+    context.succeed(data);
   }
 }
 
@@ -40,4 +40,4 @@ exports.handler = function(event, context) {
   invokeBolt(bolt, event, context, handleBoltResult);
 };
 
-invokeBolt(topology.bolts.wordCount, {key1: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);
+// invokeBolt(topology.bolts.exclaim1, {data: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);

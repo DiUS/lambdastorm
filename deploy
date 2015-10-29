@@ -1,0 +1,27 @@
+#!/bin/bash
+
+rm -f lambdastorm.zip
+zip -r lambdastorm.zip . -x '*.git*' -x lambdastorm -x 'node_modules/aws-sdk*' > /dev/null
+
+function deploy_function {
+  function_name=$1
+  handler=$2
+  if aws lambda get-function --function-name $function_name > /dev/null 2>&1 ; then
+    echo "Updating function $function_name"
+    aws lambda update-function-code \
+      --function-name $function_name \
+      --zip-file fileb://lambdastorm.zip
+  else
+    echo "Creating function $function_name"
+    aws lambda create-function \
+      --function-name $function_name \
+      --runtime nodejs \
+      --role 'arn:aws:iam::773592622512:role/lambdaInvokeLambda' \
+      --handler $handler \
+      --zip-file fileb://lambdastorm.zip
+  fi
+}
+
+deploy_function "lambdastorm" "lambdadstorm.handler"
+deploy_function "exclaim1" "exclaim.handler"
+deploy_function "exclaim2" "exclaim.handler"
