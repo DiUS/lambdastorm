@@ -1,22 +1,7 @@
 var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda();
 
-var topology = {
-  entry: ["wordcount", "sentiment"],
-  bolts: {
-    sentiment: {
-      functionName: "sentiment",
-      next: ["kinesisoutput"]
-    },
-    wordcount: {
-      functionName: "wordcount",
-      next: ["kinesisoutput"]
-    },
-    kinesisoutput: {
-      functionName: "kinesisoutput"
-    }
-  }
-};
+var topology = require('./topology.json');
 
 function invokeBolt(bolt, data, context, resultHandler) {
   console.log("Invoking function " + bolt.functionName + " with data " + JSON.stringify(data));
@@ -66,4 +51,4 @@ exports.handler = function handler(event, context) {
   }
 };
 
- exports.handler({body: "value1"} , {succeed: function(output) {console.log(JSON.stringify(output.Payload))}});
+// exports.handler({body: "cats are stupid"} , {succeed: function(output) {console.log(JSON.stringify(output.Payload))}});

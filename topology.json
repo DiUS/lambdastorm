@@ -1,0 +1,16 @@
+{
+  "entry": ["wordcount", "sentiment"],
+  "bolts": {
+    "sentiment": {
+      "functionName": "sentiment",
+      "next": ["kinesisoutput"]
+    },
+    "wordcount": {
+      "functionName": "wordcount",
+      "next": ["kinesisoutput"]
+    },
+    "kinesisoutput": {
+      "functionName": "kinesisoutput"
+    }
+  }
+}
