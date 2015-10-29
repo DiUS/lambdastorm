@@ -2,14 +2,14 @@ var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda();
 
 var topology = {
-  entry: "exclaim1",
+  entry: "exclaim",
   bolts: {
-    exclaim1: {
-      functionName: "exclaim1",
-      next: "exclaim2"
+    exclaim: {
+      functionName: "exclaim",
+      next: "kinesisoutput"
     },
-    exclaim2: {
-      functionName: "exclaim2"
+    kinesisoutput: {
+      functionName: "kinesisoutput"
     }
   }
 };
@@ -37,7 +37,15 @@ function handleBoltResult(bolt, output, context) {
 
 exports.handler = function(event, context) {
   var bolt = topology.bolts[topology.entry];
-  invokeBolt(bolt, event, context, handleBoltResult);
+  if (event.Records) {
+    event.Records.forEach(function(record) {
+      var payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
+      invokeBolt(bolt, JSON.parse(payload), context, handleBoltResult);
+    });
+  }
+  else {
+    invokeBolt(bolt, event, context, handleBoltResult);
+  }
 };
 
 // invokeBolt(topology.bolts.exclaim1, {data: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);

@@ -22,6 +22,6 @@ function deploy_function {
   fi
 }
 
-deploy_function "lambdastorm" "lambdadstorm.handler"
-deploy_function "exclaim1" "exclaim.handler"
-deploy_function "exclaim2" "exclaim.handler"
+deploy_function "lambdastorm" "lambdastorm.handler"
+deploy_function "exclaim" "exclaim.handler"
+deploy_function "kinesisoutput" "kinesisoutput.handler"
