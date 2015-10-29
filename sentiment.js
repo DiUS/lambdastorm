@@ -16,7 +16,7 @@ exports.handler = function (event, context) {
             PartitionKey: Math.floor(Math.random()*Math.pow(2, 32)).toString(),
             StreamName: "lambdastorm_negative"
         }, function(err, data) {
-            context.done(err, data);
+            // context.done(err, data);
         });
     } else if (sentimentResult.score > 0) {
         kinesis.putRecord({
@@ -24,7 +24,7 @@ exports.handler = function (event, context) {
             PartitionKey: Math.floor(Math.random()*Math.pow(2, 32)).toString(),
             StreamName: "lambdastorm_positive"
         }, function(err, data) {
-            context.done(err, data);
+            // context.done(err, data);
         });
     }
 
