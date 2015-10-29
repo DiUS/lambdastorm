@@ -25,6 +25,7 @@ function deploy_function {
 deploy_function "lambdastorm" "lambdastorm.handler"
 deploy_function "kinesisoutput" "kinesisoutput.handler"
 deploy_function "wordcount" "wordcount.handler"
+deploy_function "sentiment" "sentiment.handler"
 
 # deploy_function "exclaim" "exclaim.handler"
 # deploy_function "questionMark" "questionMark.handler"
