@@ -13,7 +13,7 @@ from boto import kinesis
 
 INSERT_IN_BATCHES = False
 BATCH_SIZE = 100
-NUM_PROCESSES = 4
+NUM_PROCESSES = 1
 AWS_REGION = 'ap-northeast-1'
 
 def find_article_files(data_dir):
