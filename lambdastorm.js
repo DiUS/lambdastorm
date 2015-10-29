@@ -2,8 +2,12 @@ var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda();
 
 var topology = {
-  entry: "wordcount",
+  entry: ["wordcount", "sentiment"],
   bolts: {
+    sentiment: {
+      functionName: "sentiment",
+      next: ["kinesisoutput"]
+    },
     wordcount: {
       functionName: "wordcount",
       next: ["kinesisoutput"]
@@ -41,17 +45,25 @@ function handleBoltResult(bolt, output, context) {
   }
 }
 
-exports.handler = function(event, context) {
-  var bolt = topology.bolts[topology.entry];
+exports.handler = function handler(event, context) {
   if (event.Records) {
     event.Records.forEach(function(record) {
+
       var payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
-      invokeBolt(bolt, JSON.parse(payload), context, handleBoltResult);
+
+      for (var i = 0; i < topology.entry.length; i++) {
+        var bolt = topology.bolts[topology.entry[i]];
+        invokeBolt(bolt, JSON.parse(payload), context, handleBoltResult);
+      }
+
     });
   }
   else {
-    invokeBolt(bolt, event, context, handleBoltResult);
+    for (var i = 0; i < topology.entry.length; i++) {
+      var bolt = topology.bolts[topology.entry[i]];
+      invokeBolt(bolt, event, context, handleBoltResult);
+    }
   }
 };
 
-// invokeBolt(topology.bolts.exclaim1, {data: "value1"}, {succeed: function(output) {console.log(JSON.stringify(output.Payload))}}, handleBoltResult);
+ exports.handler({body: "value1"} , {succeed: function(output) {console.log(JSON.stringify(output.Payload))}});
