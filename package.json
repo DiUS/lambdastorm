@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.2.12",
+    "word-count": "^0.2.1",
     "yargs": "^3.29.0"
   }
 }
