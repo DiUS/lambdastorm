@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+var fs = require("fs");
+var argv = require('yargs').argv;
+
+var AWS = require('aws-sdk');
+var lambda = new AWS.Lambda();
+
+if (argv._[0] === "invoke") {
+  var filename = argv.f;
+  fs.readFile(filename, 'utf8', function (err, input) {
+    lambda.invoke({
+      FunctionName: 'LambdaStorm',
+      Payload: input
+    }, function(err, output) {
+      console.log(input);
+      console.log(output);
+    });
+  });
+}
